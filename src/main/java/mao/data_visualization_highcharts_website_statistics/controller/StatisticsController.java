@@ -2,10 +2,17 @@ package mao.data_visualization_highcharts_website_statistics.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import mao.data_visualization_highcharts_website_statistics.entity.Memory;
+import mao.data_visualization_highcharts_website_statistics.entity.PVCount;
 import mao.data_visualization_highcharts_website_statistics.entity.R;
+import mao.data_visualization_highcharts_website_statistics.entity.UVCount;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Project name(项目名称)：data_visualization_highcharts_website_statistics
@@ -82,5 +89,51 @@ public class StatisticsController
         return R.success(memory);
     }
 
+    @GetMapping("/pv")
+    public R<List<PVCount>> pv()
+    {
+        List<PVCount> list = new ArrayList<>(30);
+        LocalDate now = LocalDate.now();
+        for (int i = 30; i > 0; i--)
+        {
+            LocalDate localDate = now.minusDays(i);
+            String date = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            PVCount pvCount = new PVCount()
+                    .setDate(date)
+                    .setCount(getIntRandom(30000, 150000));
+            list.add(pvCount);
+        }
+        String date = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        PVCount pvCount = new PVCount()
+                .setDate(date)
+                .setCount(getIntRandom(30000, 150000));
+        list.add(pvCount);
 
+        log.info("pv统计：" + list);
+        return R.success(list);
+    }
+
+    @GetMapping("/pv")
+    public R<List<UVCount>> uv()
+    {
+        List<UVCount> list = new ArrayList<>(30);
+        LocalDate now = LocalDate.now();
+        for (int i = 30; i > 0; i--)
+        {
+            LocalDate localDate = now.minusDays(i);
+            String date = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            UVCount uvCount = new UVCount()
+                    .setDate(date)
+                    .setCount(getIntRandom(30000, 150000));
+            list.add(uvCount);
+        }
+        String date = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        UVCount uvCount = new UVCount()
+                .setDate(date)
+                .setCount(getIntRandom(30000, 150000));
+        list.add(uvCount);
+
+        log.info("uv统计：" + list);
+        return R.success(list);
+    }
 }
