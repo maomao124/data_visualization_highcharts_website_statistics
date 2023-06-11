@@ -22,6 +22,11 @@
         width: 95vw;
         height: 50vh;
     }
+
+    #container3 {
+        width: 95vw;
+        height: 50vh;
+    }
 </style>
 <body>
 
@@ -29,6 +34,9 @@
 
 <br>
 <div id="container2"></div>
+
+<br>
+<div id="container3"></div>
 
 <script>
     Highcharts.setOptions({
@@ -110,7 +118,7 @@
         },
         yAxis: {
             title: {
-                text: null
+                text: "QPS"
             }
         },
         tooltip: {
@@ -250,6 +258,7 @@
                     }
                     else
                     {
+                        console.log("cpu使用率：" + response.data.data)
                         point.update(response.data.data);
                     }
                 }).catch(error =>
@@ -260,6 +269,124 @@
 
             }, 3000);
         }
+    });
+
+
+    var chart3 = Highcharts.chart('container3', {
+        chart: {
+            type: 'area',
+            marginRight: 10,
+            events: {
+                load: function ()
+                {
+                    var series = this.series,
+                        chart = this;
+                    setInterval(function ()
+                    {
+                        //axios发起ajax请求
+                        axios({
+                            //请求的方式：
+                            method: "get",
+                            //请求的url:
+                            url: "/statistics/memory",
+                        }).then(response =>
+                        {
+                            if (response.data.status === false)
+                            {
+                                series[0].addPoint([new Date().getTime(), 0], true, true);
+                                series[1].addPoint([new Date().getTime(), 0], true, true);
+                                series[2].addPoint([new Date().getTime(), 0], true, true);
+                                activeLastPointToolip(chart);
+                            }
+                            else
+                            {
+                                console.log("内存使用：" + JSON.stringify(response.data.data))
+                                series[0].addPoint([new Date().getTime(), response.data.data.use], true, true)
+                                series[1].addPoint([new Date().getTime(), response.data.data.max], true, true)
+                                series[2].addPoint([new Date().getTime(), response.data.data.total], true, true)
+                                activeLastPointToolip(chart);
+                            }
+                        }).catch(error =>
+                        {
+                            series[0].addPoint([new Date().getTime(), 0], true, true);
+                            series[1].addPoint([new Date().getTime(), 0], true, true);
+                            series[2].addPoint([new Date().getTime(), 0], true, true);
+                            activeLastPointToolip(chart);
+                        })
+
+                    }, 3000);
+                }
+            }
+        },
+        title: {
+            text: '内存使用量'
+        },
+        xAxis: {
+            type: 'datetime',
+            tickPixelInterval: 150
+        },
+        yAxis: {
+            title: {
+                text: "使用量(MB)"
+            }
+        },
+        tooltip: {
+            formatter: function ()
+            {
+                return '<b>' + this.series.name + '</b><br/>' +
+                    Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                    Highcharts.numberFormat(this.y, 2)+" MB";
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        series: [{
+            name: '当前已使用',
+            data: (function ()
+            {
+                var data = [], time = (new Date()).getTime(), i;
+                for (i = -19; i <= 0; i += 1)
+                {
+                    data.push({
+                        x: time + i * 1000,
+                        y: 0
+                    });
+                }
+                return data;
+            }())
+        },
+            {
+                name: '当前已分配',
+                data: (function ()
+                {
+                    var data = [], time = (new Date()).getTime(), i;
+                    for (i = -19; i <= 0; i += 1)
+                    {
+                        data.push({
+                            x: time + i * 1000,
+                            y: 0
+                        });
+                    }
+                    return data;
+                }())
+            }
+            ,
+            {
+                name: '总内存',
+                data: (function ()
+                {
+                    var data = [], time = (new Date()).getTime(), i;
+                    for (i = -19; i <= 0; i += 1)
+                    {
+                        data.push({
+                            x: time + i * 1000,
+                            y: 0
+                        });
+                    }
+                    return data;
+                }())
+            }]
     });
 
 </script>

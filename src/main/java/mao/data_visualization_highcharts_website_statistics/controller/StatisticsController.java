@@ -1,6 +1,7 @@
 package mao.data_visualization_highcharts_website_statistics.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import mao.data_visualization_highcharts_website_statistics.entity.Memory;
 import mao.data_visualization_highcharts_website_statistics.entity.R;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,4 +70,17 @@ public class StatisticsController
         log.info("cou使用率：" + format);
         return R.success(format);
     }
+
+    @GetMapping("/memory")
+    public R<Memory> memory()
+    {
+        Memory memory = new Memory()
+                .setUse(Double.parseDouble(String.format("%.2f", getDoubleRandom(300, 1300))))
+                .setMax(Double.parseDouble(String.format("%.2f", getDoubleRandom(1800, 2500))))
+                .setTotal(16000.0);
+        log.info("内存使用：" + memory);
+        return R.success(memory);
+    }
+
+
 }
