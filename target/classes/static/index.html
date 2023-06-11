@@ -1,25 +1,148 @@
-<!DOCTYPE html>
-
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>索引</title>
-</head>
-<body id="body">
+    <title>散点图</title>
 
-</body>
+    <script src="./js/highcharts.js"></script>
+    <script src="./js/exporting.js"></script>
+    <script src="./js/series-label.js"></script>
+    <script src="./js/zh_cn.js"></script>
+    <script src="./js/axios.js"></script>
+
+</head>
+
+<style>
+    #container {
+        width: 95vw;
+        height: 50vh;
+    }
+
+    #container2 {
+        width: 95vw;
+        height: 50vh;
+    }
+</style>
+<body>
+
+<div id="container"></div>
+
+<br>
+<div id="container2"></div>
 
 <script>
-    let body = document.getElementById("body")
-    for (let i = 1; i < 100; i++)
+    Highcharts.setOptions({
+        global: {
+            useUTC: false
+        }
+    });
+
+    function activeLastPointToolip(chart)
     {
-        const a = document.createElement("a")
-        a.href = "test" + i + ".html";
-        a.innerHTML = "test" + i + ".html";
-        body.appendChild(a);
-        a.appendChild(document.createElement("br"));
+        var points = chart.series[0].points;
+        chart.tooltip.refresh(points[points.length - 1]);
     }
+
+    var chart = Highcharts.chart('container', {
+        chart: {
+            type: 'spline',
+            marginRight: 10,
+            events: {
+                load: function ()
+                {
+                    var series = this.series[0],
+                        chart = this;
+                    activeLastPointToolip(chart);
+                    setInterval(function ()
+                    {
+                        //axios发起ajax请求
+                        axios({
+                            //请求的方式：
+                            method: "get",
+                            //请求的url:
+                            url: "/statistics/cpu",
+                        }).then(response =>
+                        {
+                            let d
+                            if (response.data.status === false)
+                            {
+                                var x, y = -1;
+                                if (response.data.time !== undefined)
+                                {
+                                    x = response.data.time
+                                }
+                                else
+                                {
+                                    d = new Date()
+                                    x = d.getTime();
+                                }
+                                series.addPoint([x, y], true, true);
+                                activeLastPointToolip(chart);
+                            }
+                            else
+                            {
+                                var x, y = -1;
+                                x = response.data.time
+                                y = response.data.data;
+                                console.log(y);
+                                series.addPoint([x, y], true, true);
+                                activeLastPointToolip(chart);
+                            }
+
+
+                        }).catch(error =>
+                        {
+                            console.log(error)
+                            series.addPoint([new Date().getTime(), -1], true, true);
+                            activeLastPointToolip(chart);
+                        })
+
+                    }, 1000);
+                }
+            }
+        },
+        title: {
+            text: '网站当前QPS'
+        },
+        xAxis: {
+            type: 'datetime',
+            tickPixelInterval: 150
+        },
+        yAxis: {
+            title: {
+                text: null
+            }
+        },
+        tooltip: {
+            formatter: function ()
+            {
+                return '<b>' + this.series.name + '</b><br/>' +
+                    Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                    Highcharts.numberFormat(this.y, 0);
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        series: [{
+            name: 'QPS',
+            data: (function ()
+            {
+                var data = [], time = (new Date()).getTime(), i;
+                for (i = -19; i <= 0; i += 1)
+                {
+                    data.push({
+                        x: time + i * 1000,
+                        y: 0
+                    });
+                }
+                return data;
+            }())
+        }]
+    });
+
+
+
 </script>
 
+</body>
 </html>
