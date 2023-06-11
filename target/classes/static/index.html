@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>索引</title>
+</head>
+<body id="body">
+
+</body>
+
+<script>
+    let body = document.getElementById("body")
+    for (let i = 1; i < 100; i++)
+    {
+        const a = document.createElement("a")
+        a.href = "test" + i + ".html";
+        a.innerHTML = "test" + i + ".html";
+        body.appendChild(a);
+        a.appendChild(document.createElement("br"));
+    }
+</script>
+
+</html>

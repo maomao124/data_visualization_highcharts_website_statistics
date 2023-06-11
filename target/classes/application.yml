@@ -1,0 +1,7 @@
+server:
+  servlet:
+    context-path: /
+  port: 8082
+spring:
+  application:
+    name: highcharts_website_statistics
