@@ -27,6 +27,16 @@
         width: 95vw;
         height: 50vh;
     }
+
+    #container4 {
+        width: 95vw;
+        height: 50vh;
+    }
+
+    #container5 {
+        width: 95vw;
+        height: 50vh;
+    }
 </style>
 <body>
 
@@ -37,6 +47,12 @@
 
 <br>
 <div id="container3"></div>
+
+<br>
+<div id="container4"></div>
+
+<br>
+<div id="container5"></div>
 
 <script>
     Highcharts.setOptions({
@@ -335,7 +351,7 @@
             {
                 return '<b>' + this.series.name + '</b><br/>' +
                     Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                    Highcharts.numberFormat(this.y, 2)+" MB";
+                    Highcharts.numberFormat(this.y, 2) + " MB";
             }
         },
         legend: {
@@ -388,6 +404,109 @@
                 }())
             }]
     });
+
+    var PVData;
+    var UVData;
+
+    function loadPV()
+    {
+        //axios发起ajax请求
+        axios({
+            //请求的方式：
+            method: "get",
+            //请求的url:
+            url: "/statistics/pv",
+        }).then(response =>
+        {
+            if (response.data.status === false)
+            {
+                console.log("重试")
+                window.setTimeout(function ()
+                {
+                    loadPV();
+                }, 5000)
+            }
+            else
+            {
+                PVData = response.data.data;
+                console.log(PVData)
+
+                var categoriesPV = (function ()
+                {
+                    var data = [];
+                    for (let i = 0; i < PVData.length; i++)
+                    {
+                        data.push(PVData[i].date);
+                    }
+                    return data;
+                }())
+                console.log(categoriesPV)
+
+                var dataPV = (function ()
+                {
+                    var data = [];
+                    for (let i = 0; i < PVData.length; i++)
+                    {
+                        data.push(PVData[i].count);
+                    }
+                    return data;
+                }())
+
+
+                var chart = Highcharts.chart('container4', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '最近30天访问统计'
+                    },
+                    subtitle: {
+                        text: 'PV'
+                    },
+                    xAxis: {
+                        categories: categoriesPV,
+                        crosshair: true
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: '访问人数'
+                        }
+                    },
+                    tooltip: {
+                        // head + 每个 point + footer 拼接成完整的 table
+                        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                            '<td style="padding:0"><b>{point.y:.0f}</b></td></tr>',
+                        footerFormat: '</table>',
+                        shared: true,
+                        useHTML: true
+                    },
+                    plotOptions: {
+                        column: {
+                            borderWidth: 0
+                        }
+                    },
+                    series: [{
+                        name: 'PV统计',
+                        data: dataPV
+                    }]
+                });
+
+            }
+
+        }).catch(error =>
+        {
+            console.log(error)
+            console.log("重试")
+            window.setTimeout(function ()
+            {
+                loadPV();
+            }, 5000)
+        })
+    }
+
+    loadPV();
 
 </script>
 

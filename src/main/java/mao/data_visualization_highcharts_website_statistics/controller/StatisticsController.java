@@ -94,7 +94,7 @@ public class StatisticsController
     {
         List<PVCount> list = new ArrayList<>(30);
         LocalDate now = LocalDate.now();
-        for (int i = 30; i > 0; i--)
+        for (int i = 29; i > 0; i--)
         {
             LocalDate localDate = now.minusDays(i);
             String date = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -113,12 +113,12 @@ public class StatisticsController
         return R.success(list);
     }
 
-    @GetMapping("/pv")
+    @GetMapping("/uv")
     public R<List<UVCount>> uv()
     {
         List<UVCount> list = new ArrayList<>(30);
         LocalDate now = LocalDate.now();
-        for (int i = 30; i > 0; i--)
+        for (int i = 29; i > 0; i--)
         {
             LocalDate localDate = now.minusDays(i);
             String date = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
