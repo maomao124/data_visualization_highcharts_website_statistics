@@ -8,6 +8,7 @@
     <script src="./js/series-label.js"></script>
     <script src="./js/zh_cn.js"></script>
     <script src="./js/axios.js"></script>
+    <script src="./js/highcharts-more.js"></script>
 
 </head>
 
@@ -59,7 +60,7 @@
                             //请求的方式：
                             method: "get",
                             //请求的url:
-                            url: "/statistics/cpu",
+                            url: "/statistics/qps",
                         }).then(response =>
                         {
                             let d
@@ -141,6 +142,125 @@
     });
 
 
+    var chart2 = Highcharts.chart('container2', {
+        chart: {
+            type: 'gauge',
+            plotBackgroundColor: null,
+            plotBackgroundImage: null,
+            plotBorderWidth: 0,
+            plotShadow: false
+        },
+        title: {
+            text: 'CPU使用率'
+        },
+        pane: {
+            startAngle: -150,
+            endAngle: 150,
+            background: [{
+                backgroundColor: {
+                    linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
+                    stops: [
+                        [0, '#FFF'],
+                        [1, '#333']
+                    ]
+                },
+                borderWidth: 0,
+                outerRadius: '109%'
+            }, {
+                backgroundColor: {
+                    linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
+                    stops: [
+                        [0, '#333'],
+                        [1, '#FFF']
+                    ]
+                },
+                borderWidth: 1,
+                outerRadius: '107%'
+            }, {
+                // default background
+            }, {
+                backgroundColor: '#DDD',
+                borderWidth: 0,
+                outerRadius: '105%',
+                innerRadius: '103%'
+            }]
+        },
+        // the value axis
+        yAxis: {
+            min: 0,
+            max: 100,
+            minorTickInterval: 'auto',
+            minorTickWidth: 1,
+            minorTickLength: 10,
+            minorTickPosition: 'inside',
+            minorTickColor: '#666',
+            tickPixelInterval: 30,
+            tickWidth: 2,
+            tickPosition: 'inside',
+            tickLength: 10,
+            tickColor: '#666',
+            labels: {
+                step: 2,
+                rotation: 'auto'
+            },
+            title: {
+                text: '%'
+            },
+            plotBands: [{
+                from: 0,
+                to: 30,
+                color: '#55BF3B' // green
+            }, {
+                from: 30,
+                to: 70,
+                color: '#DDDF0D' // yellow
+            }, {
+                from: 70,
+                to: 100,
+                color: '#DF5353' // red
+            }]
+        },
+        series: [{
+            name: 'cpu',
+            data: [0],
+            tooltip: {
+                valueSuffix: ' %'
+            }
+        }]
+    }, function (chart)
+    {
+        if (!chart.renderer.forExport)
+        {
+            setInterval(function ()
+            {
+                var point = chart.series[0].points[0], newVal;
+
+                //axios发起ajax请求
+                axios({
+                    //请求的方式：
+                    method: "get",
+                    //请求的url:
+                    url: "/statistics/cpu",
+
+                }).then(response =>
+                {
+                    if (response.data.status === false)
+                    {
+                        point.update(0);
+                    }
+                    else
+                    {
+                        point.update(response.data.data);
+                    }
+                }).catch(error =>
+                {
+                    console.log(error)
+                    point.update(0);
+                })
+
+            }, 3000);
+        }
+    });
 
 </script>
 
