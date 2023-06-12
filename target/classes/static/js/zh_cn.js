@@ -159,7 +159,7 @@
             viewData: "查看数据表格",
             viewFullscreen: "全屏查看",
             weekdays: ["星期天", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"],
-            viewData: "查看数据表格",
+            //viewData: "查看数据表格",
             rangeSelectorFrom: "开始时间",
             rangeSelectorTo: "结束时间",
             rangeSelectorZoom: "范围",
