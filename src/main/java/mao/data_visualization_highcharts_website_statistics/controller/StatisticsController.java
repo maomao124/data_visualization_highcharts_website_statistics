@@ -1,10 +1,8 @@
 package mao.data_visualization_highcharts_website_statistics.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import mao.data_visualization_highcharts_website_statistics.entity.Memory;
-import mao.data_visualization_highcharts_website_statistics.entity.PVCount;
-import mao.data_visualization_highcharts_website_statistics.entity.R;
-import mao.data_visualization_highcharts_website_statistics.entity.UVCount;
+import mao.data_visualization_highcharts_website_statistics.dto.LoginAndRegistrationCountDTO;
+import mao.data_visualization_highcharts_website_statistics.entity.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -70,6 +68,11 @@ public class StatisticsController
         return R.success(intRandom);
     }
 
+    /**
+     * CPU使用率统计
+     *
+     * @return {@link R}<{@link Double}>
+     */
     @GetMapping("/cpu")
     public R<Double> cpu()
     {
@@ -78,6 +81,11 @@ public class StatisticsController
         return R.success(format);
     }
 
+    /**
+     * 内存统计
+     *
+     * @return {@link R}<{@link Memory}>
+     */
     @GetMapping("/memory")
     public R<Memory> memory()
     {
@@ -89,6 +97,11 @@ public class StatisticsController
         return R.success(memory);
     }
 
+    /**
+     * pv统计
+     *
+     * @return {@link R}<{@link List}<{@link PVCount}>>
+     */
     @GetMapping("/pv")
     public R<List<PVCount>> pv()
     {
@@ -113,6 +126,11 @@ public class StatisticsController
         return R.success(list);
     }
 
+    /**
+     * uv统计
+     *
+     * @return {@link R}<{@link List}<{@link UVCount}>>
+     */
     @GetMapping("/uv")
     public R<List<UVCount>> uv()
     {
@@ -135,5 +153,61 @@ public class StatisticsController
 
         log.info("uv统计：" + list);
         return R.success(list);
+    }
+
+
+    /**
+     * 登录和注册统计
+     *
+     * @return {@link R}<{@link LoginAndRegistrationCountDTO}>
+     */
+    @GetMapping("/loginAndRegistration")
+    public R<LoginAndRegistrationCountDTO> loginAndRegistration()
+    {
+        LoginAndRegistrationCountDTO loginAndRegistrationCountDTO = new LoginAndRegistrationCountDTO();
+        {
+            List<LoginAndRegistrationCount> list = new ArrayList<>(7);
+            LocalDate now = LocalDate.now();
+            for (int i = 6; i > 0; i--)
+            {
+                LocalDate localDate = now.minusDays(i);
+                String date = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                LoginAndRegistrationCount loginAndRegistrationCount = new LoginAndRegistrationCount()
+                        .setDate(date)
+                        .setCount(getIntRandom(80000, 400000));
+                list.add(loginAndRegistrationCount);
+            }
+            String date = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            LoginAndRegistrationCount loginAndRegistrationCount = new LoginAndRegistrationCount()
+                    .setDate(date)
+                    .setCount(getIntRandom(80000, 400000));
+            list.add(loginAndRegistrationCount);
+
+            log.info("登录统计：" + list);
+            loginAndRegistrationCountDTO.setLogin(list);
+        }
+        {
+            List<LoginAndRegistrationCount> list = new ArrayList<>(7);
+            LocalDate now = LocalDate.now();
+            for (int i = 6; i > 0; i--)
+            {
+                LocalDate localDate = now.minusDays(i);
+                String date = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                LoginAndRegistrationCount loginAndRegistrationCount = new LoginAndRegistrationCount()
+                        .setDate(date)
+                        .setCount(getIntRandom(10000, 70000));
+                list.add(loginAndRegistrationCount);
+            }
+            String date = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            LoginAndRegistrationCount loginAndRegistrationCount = new LoginAndRegistrationCount()
+                    .setDate(date)
+                    .setCount(getIntRandom(10000, 70000));
+            list.add(loginAndRegistrationCount);
+
+            log.info("登录统计：" + list);
+            loginAndRegistrationCountDTO.setRegistration(list);
+        }
+
+        return R.success(loginAndRegistrationCountDTO);
     }
 }
