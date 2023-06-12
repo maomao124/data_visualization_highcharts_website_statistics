@@ -42,6 +42,11 @@
         width: 95vw;
         height: 50vh;
     }
+
+    #container7 {
+        width: 95vw;
+        height: 50vh;
+    }
 </style>
 <body>
 
@@ -61,6 +66,9 @@
 
 <br>
 <div id="container6"></div>
+
+<br>
+<div id="container7"></div>
 
 <script>
     Highcharts.setOptions({
@@ -725,9 +733,96 @@
     }
 
 
+    var ipCountData;
+
+    function loadIpCount()
+    {
+        //axios发起ajax请求
+        axios({
+            //请求的方式：
+            method: "get",
+            //请求的url:
+            url: "/statistics/ipCount",
+        }).then(response =>
+        {
+            if (response.data.status === false)
+            {
+                console.log("重试")
+                window.setTimeout(function ()
+                {
+                    loadIpCount();
+                }, 5000)
+            }
+            else
+            {
+                ipCountData = response.data.data;
+                console.log(ipCountData);
+
+                Highcharts.chart('container7', {
+                    chart: {
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        type: 'pie'
+                    },
+                    title: {
+                        text: '今日访问用户所在地区统计'
+                    },
+                    subtitle: {
+                        text: '时间：' + ipCountData.date
+                    },
+                    tooltip: {
+                        pointFormat: '{series.name}: <b>{point.percentage:.0f}%</b>'
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: false
+                            },
+                            showInLegend: true
+                        }
+                    },
+                    series: [
+                        {
+                            name: '百分比',
+                            colorByPoint: true,
+                            data: (function ()
+                            {
+                                var data = [];
+                                for (let i = 0; i < ipCountData.data.length; i++)
+                                {
+                                    data.push(
+                                        {
+                                            name: ipCountData.data[i].area,
+                                            y: ipCountData.data[i].count
+                                        }
+                                    )
+                                }
+                                console.log("数据处理完成")
+                                console.log(data);
+                                return data;
+                            }())
+                        }
+                    ]
+                });
+            }
+        }).catch(error =>
+        {
+            console.log(error);
+            console.log("重试")
+            window.setTimeout(function ()
+            {
+                loadIpCount();
+            }, 5000)
+        })
+    }
+
     loadPV();
     loadUV();
     loadLoginAndRegistration();
+    loadIpCount();
 
 </script>
 

@@ -1,6 +1,7 @@
 package mao.data_visualization_highcharts_website_statistics.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import mao.data_visualization_highcharts_website_statistics.dto.IpCountDTO;
 import mao.data_visualization_highcharts_website_statistics.dto.LoginAndRegistrationCountDTO;
 import mao.data_visualization_highcharts_website_statistics.entity.*;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,9 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Project name(项目名称)：data_visualization_highcharts_website_statistics
@@ -209,5 +213,35 @@ public class StatisticsController
         }
 
         return R.success(loginAndRegistrationCountDTO);
+    }
+
+    /**
+     * ip访问统计
+     *
+     * @return {@link R}<{@link Map}<{@link String}, {@link Integer}>>
+     */
+    @GetMapping("/ipCount")
+    public R<IpCountDTO> ipCount()
+    {
+        List<IpCount> list = new ArrayList<>();
+        list.add(new IpCount("北京", getIntRandom(1000, 100000)));
+        list.add(new IpCount("浙江", getIntRandom(1000, 100000)));
+        list.add(new IpCount("广东", getIntRandom(1000, 100000)));
+        list.add(new IpCount("湖南", getIntRandom(1000, 100000)));
+        list.add(new IpCount("广西", getIntRandom(1000, 100000)));
+        list.add(new IpCount("海南", getIntRandom(1000, 100000)));
+        list.add(new IpCount("福建", getIntRandom(1000, 100000)));
+        list.add(new IpCount("山东", getIntRandom(1000, 100000)));
+        list.add(new IpCount("山西", getIntRandom(1000, 100000)));
+        list.add(new IpCount("四川", getIntRandom(1000, 100000)));
+        list.add(new IpCount("内蒙古", getIntRandom(1000, 100000)));
+        list.add(new IpCount("新疆", getIntRandom(1000, 100000)));
+        list.add(new IpCount("西藏", getIntRandom(1000, 100000)));
+        list.add(new IpCount("湖北", getIntRandom(1000, 100000)));
+        list.add(new IpCount("河南", getIntRandom(1000, 100000)));
+        list.add(new IpCount("河北", getIntRandom(1000, 100000)));
+        list.add(new IpCount("未知地区", getIntRandom(1000, 100000)));
+        log.info("地区统计：" + list);
+        return R.success(new IpCountDTO().setDate(LocalDateTime.now()).setData(list));
     }
 }
