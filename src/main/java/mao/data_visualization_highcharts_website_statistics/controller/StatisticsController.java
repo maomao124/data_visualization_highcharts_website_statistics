@@ -100,13 +100,13 @@ public class StatisticsController
             String date = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             PVCount pvCount = new PVCount()
                     .setDate(date)
-                    .setCount(getIntRandom(30000, 150000));
+                    .setCount(getIntRandom(300000, 1500000));
             list.add(pvCount);
         }
         String date = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         PVCount pvCount = new PVCount()
                 .setDate(date)
-                .setCount(getIntRandom(30000, 150000));
+                .setCount(getIntRandom(300000, 1500000));
         list.add(pvCount);
 
         log.info("pv统计：" + list);
@@ -124,13 +124,13 @@ public class StatisticsController
             String date = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             UVCount uvCount = new UVCount()
                     .setDate(date)
-                    .setCount(getIntRandom(30000, 150000));
+                    .setCount(getIntRandom(80000, 500000));
             list.add(uvCount);
         }
         String date = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         UVCount uvCount = new UVCount()
                 .setDate(date)
-                .setCount(getIntRandom(30000, 150000));
+                .setCount(getIntRandom(80000, 500000));
         list.add(uvCount);
 
         log.info("uv统计：" + list);

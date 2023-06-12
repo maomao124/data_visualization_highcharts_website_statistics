@@ -470,7 +470,7 @@
                     yAxis: {
                         min: 0,
                         title: {
-                            text: '访问人数'
+                            text: '访问人次'
                         }
                     },
                     tooltip: {
@@ -506,7 +506,106 @@
         })
     }
 
+    function loadUV()
+    {
+        //axios发起ajax请求
+        axios({
+            //请求的方式：
+            method: "get",
+            //请求的url:
+            url: "/statistics/uv",
+        }).then(response =>
+        {
+            if (response.data.status === false)
+            {
+                console.log("重试")
+                window.setTimeout(function ()
+                {
+                    loadUV();
+                }, 5000)
+            }
+            else
+            {
+                UVData = response.data.data;
+                console.log(UVData)
+
+                var categoriesUV = (function ()
+                {
+                    var data = [];
+                    for (let i = 0; i < UVData.length; i++)
+                    {
+                        data.push(UVData[i].date);
+                    }
+                    return data;
+                }())
+                console.log(categoriesUV)
+
+                var dataUV = (function ()
+                {
+                    var data = [];
+                    for (let i = 0; i < UVData.length; i++)
+                    {
+                        data.push(UVData[i].count);
+                    }
+                    return data;
+                }())
+
+
+                var chart = Highcharts.chart('container5', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '最近30天访问用户统计'
+                    },
+                    subtitle: {
+                        text: 'UV'
+                    },
+                    xAxis: {
+                        categories: categoriesUV,
+                        crosshair: true
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: '访问用户数'
+                        }
+                    },
+                    tooltip: {
+                        // head + 每个 point + footer 拼接成完整的 table
+                        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                            '<td style="padding:0"><b>{point.y:.0f}</b></td></tr>',
+                        footerFormat: '</table>',
+                        shared: true,
+                        useHTML: true
+                    },
+                    plotOptions: {
+                        column: {
+                            borderWidth: 0
+                        }
+                    },
+                    series: [{
+                        name: 'UV统计',
+                        data: dataUV
+                    }]
+                });
+
+            }
+
+        }).catch(error =>
+        {
+            console.log(error)
+            console.log("重试")
+            window.setTimeout(function ()
+            {
+                loadUV();
+            }, 5000)
+        })
+    }
+
     loadPV();
+    loadUV();
 
 </script>
 
